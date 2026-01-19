@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Clicker</title>
+<style>
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: #1e1e1e;
+
+    color: white;
+
+    text-align: center;
+
+}
+
+.box {
+
+    background: #2e2e2e;
+
+    padding: 15px;
+
+    margin: 10px auto;
+
+    width: 340px;
+
+    border-radius: 10px;
+
+}
+
+button {
+
+    padding: 10px;
+
+    margin: 5px;
+
+    width: 90%;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+}
+
+.disabled {
+
+    background: #555;
+
+    cursor: not-allowed;
+
+}
+
+.achievement {
+
+    text-align: left;
+
+    font-size: 14px;
+
+}
+
+.unlocked {
+
+    color: lime;
+
+}
+</style>
+</head>
+<body>
+<h1>🔥 Ultimate Clicker 🔥</h1>
+<div class="box">
+<h2>Poeng: <span id="points">0</span></h2>
+<h3>Per klikk: <span id="perClick">1</span></h3>
+<h3>Per sekund: <span id="perSecond">0</span></h3>
+<button onclick="clickPoint()">KLIKK</button>
+</div>
+<div class="box">
+<h2>Oppgraderinger</h2>
+<button onclick="buyUpgrade('click')">Sterkere klikk (+1)<br>Pris: <span id="clickCost">10</span></button>
+<button onclick="buyUpgrade('auto')">Auto-klikker (+1/s)<br>Pris: <span id="autoCost">50</span></button>
+<button onclick="buyUpgrade('mult')">Multiplikator x2<br>Pris: <span id="multCost">250</span></button>
+<button onclick="buyUpgrade('mega')">Mega klikk (+10)<br>Pris: <span id="megaCost">1000</span></button>
+</div>
+<div class="box">
+<h2>Ascension</h2>
+<p>Krever: <b>10 000 poeng</b></p>
+<button onclick="ascend()">ASCEND</button>
+<p>Ascension Points: <span id="ap">0</span></p>
+<p>Ascension Bonus: x<span id="apBonus">1</span></p>
+</div>
+<div class="box">
+<h2>Achievements</h2>
+<div id="achievements"></div>
+</div>
+<script>
+
+let points = 0;
+
+let perClick = 1;
+
+let perSecond = 0;
+
+let multiplier = 1;
+
+let clickCost = 10;
+
+let autoCost = 50;
+
+let multCost = 250;
+
+let megaCost = 1000;
+
+let ascensionPoints = 0;
+
+let ascensionBonus = 1;
+
+const achievements = [
+
+    { id: 1, text: "Første klikk", check: () => points >= 1 },
+
+    { id: 2, text: "100 poeng", check: () => points >= 100 },
+
+    { id: 3, text: "1 000 poeng", check: () => points >= 1000 },
+
+    { id: 4, text: "10 000 poeng", check: () => points >= 10000 },
+
+    { id: 5, text: "10 per sekund", check: () => perSecond >= 10 },
+
+    { id: 6, text: "100 per klikk", check: () => perClick >= 100 },
+
+    { id: 7, text: "Første Ascension", check: () => ascensionPoints >= 1 },
+
+    { id: 8, text: "5 Ascensions", check: () => ascensionPoints >= 5 },
+
+    { id: 9, text: "100 000 poeng", check: () => points >= 100000 },
+
+    { id: 10, text: "Clicker Master", check: () => perClick >= 500 }
+
+];
+
+let unlocked = [];
+
+function updateUI() {
+
+    document.getElementById("points").textContent = Math.floor(points);
+
+    document.getElementById("perClick").textContent = perClick;
+
+    document.getElementById("perSecond").textContent = perSecond;
+
+    document.getElementById("clickCost").textContent = clickCost;
+
+    document.getElementById("autoCost").textContent = autoCost;
+
+    document.getElementById("multCost").textContent = multCost;
+
+    document.getElementById("megaCost").textContent = megaCost;
+
+    document.getElementById("ap").textContent = ascensionPoints;
+
+    document.getElementById("apBonus").textContent = ascensionBonus;
+
+    renderAchievements();
+
+}
+
+function clickPoint() {
+
+    points += perClick * multiplier * ascensionBonus;
+
+    updateUI();
+
+}
+
+function buyUpgrade(type) {
+
+    if (type === "click" && points >= clickCost) {
+
+        points -= clickCost;
+
+        perClick += 1;
+
+        clickCost = Math.floor(clickCost * 1.4);
+
+    }
+
+    if (type === "auto" && points >= autoCost) {
+
+        points -= autoCost;
+
+        perSecond += 1;
+
+        autoCost = Math.floor(autoCost * 1.5);
+
+    }
+
+    if (type === "mult" && points >= multCost) {
+
+        points -= multCost;
+
+        multiplier *= 2;
+
+        multCost = Math.floor(multCost * 2);
+
+    }
+
+    if (type === "mega" && points >= megaCost) {
+
+        points -= megaCost;
+
+        perClick += 10;
+
+        megaCost = Math.floor(megaCost * 1.8);
+
+    }
+
+    updateUI();
+
+}
+
+function ascend() {
+
+    if (points >= 10000) {
+
+        ascensionPoints++;
+
+        ascensionBonus = 1 + ascensionPoints * 0.25;
+
+        points = 0;
+
+        perClick = 1;
+
+        perSecond = 0;
+
+        multiplier = 1;
+
+        clickCost = 10;
+
+        autoCost = 50;
+
+        multCost = 250;
+
+        megaCost = 1000;
+
+        updateUI();
+
+    }
+
+}
+
+function renderAchievements() {
+
+    const container = document.getElementById("achievements");
+
+    container.innerHTML = "";
+
+    achievements.forEach(a => {
+
+        const unlockedNow = a.check();
+
+        if (unlockedNow && !unlocked.includes(a.id)) {
+
+            unlocked.push(a.id);
+
+        }
+
+        const div = document.createElement("div");
+
+        div.className = "achievement " + (unlocked.includes(a.id) ? "unlocked" : "");
+
+        div.textContent = (unlocked.includes(a.id) ? "🏆 " : "🔒 ") + a.text;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+setInterval(() => {
+
+    points += perSecond * ascensionBonus;
+
+    updateUI();
+
+}, 1000);
+
+updateUI();
+</script>
+</body>
+</html>
+ 
